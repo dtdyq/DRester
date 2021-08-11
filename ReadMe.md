@@ -70,5 +70,5 @@ feature list:
 
 5. greatful statistic for result,support text result and html ouput:
 
-   [html result](./img/statistic.JPG)
+   ![html result](./img/statistic.JPG)
 
