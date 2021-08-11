@@ -1,0 +1,59 @@
+{
+    "name": "HttpBinTest",
+    "args": {
+        "kvArgs": {
+            "timeout": 10000
+        }
+    },
+    "taskExecPolicy": "parallel",
+    "tasks": [
+        {
+            "name": "delay-test",
+            "template": {
+                "method": "get",
+                "url": "https://httpbin.org/delay/${delaySecond}",
+                "timeout": "${timeout}",
+                "header": {
+                    "User-Agent": "rester-1.0"
+                },
+                "asserts": "assertCode,assertCost"
+            },
+            "args": {
+                "csvArgs": [
+                    "delay.csv"
+                ]
+            },
+            "cfg": {
+                "reqTimes": 24,
+                "thread": 6
+            }
+        },
+        {
+            "name": "method-test",
+            "template": {
+                "method": "${method}",
+                "url": "https://httpbin.org/${method}"
+            },
+            "args": {
+                "csvArgs": [
+                    "method.csv"
+                ]
+            },
+            "cfg": {
+                "skip": false,
+                "reqTimes": 6,
+                "dependencies": [
+                    "delay-test"
+                ]
+            }
+        }
+    ],
+    "assertions": [
+        {
+            "id": "assertCode",
+            "ref": "code",
+            "oper": "eq",
+            "expect": "200"
+        }
+    ]
+}

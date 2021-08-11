@@ -1,0 +1,77 @@
+# global tasks name,must specify
+name: httpTest
+# config global args:
+# kvArgs: key:value map
+# csvArgs: specify csv file paths
+# propertyArgs: args configured in properties file
+# all ref files can use absolute path or relate path
+globalArgs:
+  kvArgs:
+    key: value
+  csvArgs:
+    - test1.csv
+    - test2.csv
+  propertiesCsv:
+    - test1.properties
+    - test2.properties
+# tasks execute policy:serial/parallel,if serial be configured,task will execute one by one,else run tasks parallel,default:serial
+taskExecPolicy: serial
+# if enable statistic,will generate html statistic file when all tasks executed,default:true
+statisticEnable: true
+# log level,default:info
+logLevel: ERROR
+# define the task list
+tasks:
+  # task name,must be specified
+  - name: delayTest
+    # define the http field template
+    template:
+      # http method,can use variable,default:get
+      method: get
+      # http url,can use variable,must specify
+      url: https://httpbin.org/delay/${delaySecond}
+      # config the body str in one line or in template vm file use bodyPath
+      body: ...
+      bodyPath: body.vm
+      # config http headers
+      header:
+        header-key: header-val
+      # http request timeout,default never timeout
+      timeout: 3000
+      #basic auth,style:username:password
+      basicAuth: testU:testP
+      #config assertions for current request,assertion split by ,;assertions defined in global->assertions
+      asserts: assert1,assert2
+    # args for current task,if variable can not find in here,will search in global args
+    args:
+      csvArgs:
+        - delay.csv
+    # task general config
+    cfg:
+      # http proxy for all requests in cur task
+      proxy: username:password@host:port
+      #enable ssl verify or not,default false
+      ssl: false
+      # config the request times,default 1
+      requestCnt: 1
+      # execute the task or not,default false
+      skip: false
+      # specify thread num to execute task requests,default 1
+      thread: 1
+      # define how to assign requests to threads:segment/random/rotation,default segment
+      threadAssignPolicy: rotation
+      # every request retryTimes times on failed,default 1
+      retryCnt: 1
+      # run all failed requests on task run finished,default false
+      retryFailedOnFinish: false
+      # export failed requests meta data into json file,default false
+      exportFailedToJson: false
+assertions:
+  # assertion name can not contain ,
+  - id: assertId
+    # values:code(resp code),header(headers in json format),resp(http response),respSize(resp size,bytes),cost(request cost ms)
+    ref: reference request response
+    # values: lt(less than),le(less than or equal to),eq(equal to),ne(not equal to),ge(greater than or equal to),gt(greater than),match(match regex),nomatch(not match regex)
+    oper: operate
+    # expect value
+    expect: the expect value
